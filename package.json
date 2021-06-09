@@ -2,8 +2,10 @@
   "name": "first-api",
   "version": "1.0.0",
   "description": "This is my first API. Repo this for studies.",
-  "main": "index.js",
+  "main": "src/server.js",
   "scripts": {
+    "start": "node",
+    "dev": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,6 +26,7 @@
   },
   "homepage": "https://github.com/dharuanluigi/first-api#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "morgan": "^1.10.0"
   }
 }
