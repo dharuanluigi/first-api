@@ -1,21 +1,18 @@
 const routes = require('express').Router()
+const productController = require('../controller/products')
 
 routes.get('/', (req, res, next) => {
     res.status(200).send({
-        message: "Get all products"
+        message: "All products was got!",
+        data: productController.getAll()
     })
 })
 
 routes.post('/', (req, res, next) => {
-    const prd = {
-        name: req.body.name,
-        qtd: req.body.qtd
-    }
+    
     res.status(201).send({
         message: "Product added successfully",
-        product: {
-            ...prd
-        }
+        data: ""
     })
 })
 
