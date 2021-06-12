@@ -2,17 +2,31 @@ const routes = require('express').Router()
 const productController = require('../controller/products')
 
 routes.get('/', (req, res, next) => {
-    res.status(200).send({
-        message: "All products was got!",
-        data: productController.getAll()
+    productController.getAll()
+    .then((content) => {
+        res.status(content.status).send({
+            message: content.response,
+            data: content.data
+        })
+    })
+    .catch((err) => {
+        return res.status(500).send({
+            message: "Internal issue"
+        })
     })
 })
 
 routes.post('/', (req, res, next) => {
-    
-    res.status(201).send({
-        message: "Product added successfully",
-        data: ""
+    productController.addProd(req.body)
+    .then((content) => {
+        return res.status(content.status).send({
+            message: content.response
+        })
+    })
+    .catch((err) => {
+        return res.status(500).send({
+            message: "Internal issue"
+        })
     })
 })
 
