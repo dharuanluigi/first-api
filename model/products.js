@@ -3,39 +3,71 @@ const Database = require('../config/db')
 module.exports = {
     async getAll() {
 
-        let response = "Here we are, all products bellow"
-        let status = 200
-        let data = null
+        let response = {
+            message: "Here we are, all products bellow",
+            status: 200,
+            quantity: 0,
+            data: []
+        }
 
-        console.time()
         const connector = await Database()
 
         try {
-             data = await connector.all(`
+            const data = await connector.all(`
                 SELECT * FROM Products;
             `)
+
+            response.quantity = data.length
+            response.data = data
         }
         catch(err) {
-            response = "Problem when try to get all products!"
-            status = 500
+            console.log(err)
+            response = this.getErrorDictionary(err.errno)
         }
         finally {
             await connector.close()
         }
-        console.timeEnd()
 
-        return {
-            response,
-            status,
-            data: data === null ? "There nothing here!" : data
-        }
+        return response
     },
-    async setA(prod_data) {
-        
-        let response = "Product added successfully"
-        let status = 200
+    async get(id) {
+        let response = {
+            message: "Product information bellow",
+            status: 200,
+            data: []
+        }
 
-        console.time()
+        const connector = await Database()
+
+        try {
+            const data = await connector.get(`
+                SELECT * FROM Products
+                WHERE id_prod = ${id};
+            `)
+
+            if(data) {
+                response.data = data
+            }
+            else {
+                response.message = "No data found!"
+                response.status = 404
+            }
+        }
+        catch(err) {
+            console.log(err)
+        }
+        finally {
+            await connector.close()
+        }
+
+        return response
+    },
+    async set(prod_data) {
+        
+        let response = {
+            message: "Product added successfully",
+            status: 200
+        }
 
         const connector = await Database()
 
@@ -48,24 +80,78 @@ module.exports = {
             `)
         }
         catch(err) {
-            switch(err.errno) {
-                case 19:
-                    response = "Value already exist!"
-                    status = 409
-                    break
-                default:       
-                    response = "Unknow error!"
-                    status = 500
-            }
+            response = this.getErrorDictionary(err.errno)
         }
         finally {
             await connector.close()
         }
 
-        console.timeEnd()
+        return response
+    },
+    async update(prod_data) {
+        
+        let response = {
+            message: "Product updated successfully!",
+            status: 200
+        }
+        const connector = await Database()
+
+        try {
+            await connector.run(`
+                UPDATE Products
+                SET name = "${prod_data.name}",
+                price = ${Number(prod_data.price)}
+                WHERE id_prod = ${Number(prod_data.id)};
+            `)
+        }
+        catch(err) {
+            response = this.getErrorDictionary(err.errno)
+        }
+        finally {
+            await connector.close()
+        }
+
+        return response
+    },
+    async delete(prod_id) {
+        let response = {
+            message: "Product deleted sucessfully!",
+            status: 200
+        }
+
+        const connector = await Database()
+
+        try {
+            await connector.run(`
+                DELETE FROM Products
+                WHERE id_prod = ${Number(prod_id)};
+            `)
+        }
+        catch(err) {
+            console.log(err)
+        }
+        finally {
+            await connector.close()
+        }
+
+        return response
+    },
+    getErrorDictionary(error_index) {
+        let message = null
+        let status = null
+
+        switch(error_index) {
+            case 19:
+                message = "Product name already exist!"
+                status = 409
+                break
+            default:
+                message = "Internal unknow issue"
+                status = 500
+        }
 
         return {
-            response,
+            message,
             status
         }
     }
