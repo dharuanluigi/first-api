@@ -5,6 +5,6 @@ module.exports = {
         return await productModel.getAll()
     },
     async addProd(prod_data) {
-        
+        return await productModel.setA(prod_data)
     }
 }
