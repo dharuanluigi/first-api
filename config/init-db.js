@@ -15,9 +15,9 @@ const initDB = {
 
         await connector.run(`
             CREATE TABLE Products (
-                id_prod INTEGER AUTO INCREMENT PRIMARY KEY,
-                name VARCHAR(45),
-                value FLOAT
+                id_prod INTEGER PRIMARY KEY AUTOINCREMENT,
+                name VARCHAR(45) UNIQUE,
+                price FLOAT
             );
         `)
 
@@ -36,7 +36,7 @@ const initDB = {
 
         await connector.run(`
             CREATE TABLE Orders (
-                id_ord INTEGER AUTO INCREMENT PRIMARY KEY,
+                id_ord INTEGER PRIMARY KEY AUTOINCREMENT,
                 id_prod INTEGER,
                 qtd INTEGER,
                 FOREIGN KEY (id_prod) REFERENCES Products (id_prod)
